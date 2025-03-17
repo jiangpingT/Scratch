@@ -1,0 +1,80 @@
+源文本: Hello world
+译文: 了
+参考: 你好世界
+
+源文本: Good morning
+译文: 了
+参考: 早上好
+
+源文本: How are you?
+译文: 了
+参考: 你好吗？
+
+源文本: This is a test
+译文: 这祝这祝祝这祝祝让祝祝这祝祝这祝祝这祝祝这祝祝让让这这让这有祝祝让我在的是祝是祝是祝是祝是祝是的的
+参考: 这是一个测试
+
+源文本: Machine learning is fun
+译文: 了
+参考: 机器学习很有趣
+
+源文本: What's your name?
+译文: 我祝让让让祝让祝祝让请祝的祝祝让祝让祝让祝让祝让祝让祝请祝请的的的的祝祝让的的的祝祝让我是请是请是
+参考: 你叫什么名字？
+
+源文本: Nice to meet you
+译文: 你祝祝祝祝祝祝有祝祝祝祝祝祝祝祝祝祝祝回祝祝祝祝祝回祝回祝回回祝有有有有祝祝有有有你回你回你回你有
+参考: 很高兴认识你
+
+源文本: I am a student
+译文: 了
+参考: 我是一名学生
+
+源文本: The weather is nice today
+译文: 的祝祝祝最祝祝祝器有祝祝祝祝祝祝器有器有器有祝祝有器有最祝祝祝器有最祝有最器有最祝器有最祝我是茶的
+参考: 今天天气真好
+
+源文本: I love programming
+译文: 了
+参考: 我喜欢编程
+
+源文本: Python is awesome
+译文: 了
+参考: Python很棒
+
+源文本: Deep learning is amazing
+译文: 了
+参考: 深度学习很神奇
+
+源文本: Natural language processing
+译文: 了
+参考: 自然语言处理
+
+源文本: Artificial intelligence
+译文: 了
+参考: 人工智能
+
+源文本: Big data analytics
+译文: 了
+参考: 大数据分析
+
+源文本: Cloud computing
+译文: 
+参考: 云计算
+
+源文本: Software engineering
+译文: 
+参考: 软件工程
+
+源文本: Web development
+译文: 了
+参考: 网络开发
+
+源文本: Mobile app development
+译文: 了
+参考: 移动应用开发
+
+源文本: Data science
+译文: 
+参考: 数据科学
+

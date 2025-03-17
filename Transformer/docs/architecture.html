@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer 模型架构 - 实现教程</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        /* 复用index.html的样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        .implementation {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        nav {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="#overview">架构概述</a>
+            <a href="#components">核心组件</a>
+            <a href="#implementation">实现细节</a>
+        </nav>
+
+        <h1>Transformer 模型架构</h1>
+
+        <section id="overview">
+            <h2>架构概述</h2>
+            <p>本项目实现的Transformer模型基于"Attention is All You Need"论文，针对英汉翻译任务进行了优化。模型采用编码器-解码器架构，完全基于注意力机制，不使用循环或卷积层。</p>
+            
+            <div class="note">
+                <h3>主要特点</h3>
+                <ul>
+                    <li>多头自注意力机制</li>
+                    <li>位置编码</li>
+                    <li>残差连接和层归一化</li>
+                    <li>针对Apple Silicon优化的张量计算</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="components">
+            <h2>核心组件</h2>
+            
+            <h3>1. 位置编码 (PositionalEncoding)</h3>
+            <div class="implementation">
+                <p>位置编码用于为序列中的每个位置添加位置信息，使用正弦和余弦函数生成：</p>
+                <pre><code class="python">
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_seq_length=5000):
+        super().__init__()
+        pe = torch.zeros(max_seq_length, d_model)
+        position = torch.arange(0, max_seq_length, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0)
+        self.register_buffer('pe', pe)
+                </code></pre>
+            </div>
+
+            <h3>2. 多头注意力 (MultiHeadAttention)</h3>
+            <div class="implementation">
+                <p>多头注意力机制允许模型同时关注不同位置的信息：</p>
+                <pre><code class="python">
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads, dropout=0.1):
+        super().__init__()
+        assert d_model % num_heads == 0
+        self.d_k = d_model // num_heads
+        self.num_heads = num_heads
+        self.linear_layers = nn.ModuleList([nn.Linear(d_model, d_model) for _ in range(3)])
+        self.output_linear = nn.Linear(d_model, d_model)
+        self.dropout = nn.Dropout(p=dropout)
+                </code></pre>
+            </div>
+
+            <h3>3. 前馈网络 (FeedForward)</h3>
+            <div class="implementation">
+                <p>位于注意力层之后的前馈网络，包含两个线性变换：</p>
+                <pre><code class="python">
+class FeedForward(nn.Module):
+    def __init__(self, d_model, d_ff, dropout=0.1):
+        super().__init__()
+        self.w_1 = nn.Linear(d_model, d_ff)
+        self.w_2 = nn.Linear(d_ff, d_model)
+        self.dropout = nn.Dropout(dropout)
+        self.activation = nn.GELU()  # 使用GELU激活函数
+                </code></pre>
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>实现细节</h2>
+            
+            <h3>Apple Silicon优化</h3>
+            <div class="implementation">
+                <p>针对M4 Pro芯片的优化包括：</p>
+                <ul>
+                    <li>使用MPS后端进行加速</li>
+                    <li>优化内存访问模式</li>
+                    <li>批处理大小动态调整</li>
+                </ul>
+                <pre><code class="python">
+# 设备配置
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+model = model.to(device)
+                </code></pre>
+            </div>
+
+            <h3>性能优化</h3>
+            <div class="note">
+                <ul>
+                    <li>使用torch.jit.script进行即时编译</li>
+                    <li>实现了梯度检查点以节省内存</li>
+                    <li>使用混合精度训练</li>
+                    <li>实现了注意力分数的缓存机制</li>
+                </ul>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">返回顶部</a>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer 微调指南 - 实现教程</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        /* 复用index.html的样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        .implementation {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        nav {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="#preparation">准备工作</a>
+            <a href="#finetune">微调过程</a>
+            <a href="#techniques">高级技巧</a>
+        </nav>
+
+        <h1>Transformer 微调指南</h1>
+
+        <section id="preparation">
+            <h2>准备工作</h2>
+            
+            <h3>1. 数据准备</h3>
+            <div class="implementation">
+                <p>准备领域特定的数据集：</p>
+                <pre><code class="python">
+def prepare_finetune_data(domain_src_file, domain_tgt_file, general_vocab):
+    """准备领域特定的微调数据"""
+    # 读取领域数据
+    domain_pairs = []
+    with open(domain_src_file, 'r', encoding='utf-8') as f_src, \
+         open(domain_tgt_file, 'r', encoding='utf-8') as f_tgt:
+        for src_line, tgt_line in zip(f_src, f_tgt):
+            domain_pairs.append((src_line.strip(), tgt_line.strip()))
+    
+    # 构建领域词表
+    domain_vocab = Vocabulary(freq_threshold=1)
+    domain_vocab.build_vocabulary([pair[1] for pair in domain_pairs])
+    
+    # 合并通用词表和领域词表
+    merged_vocab = merge_vocabularies(general_vocab, domain_vocab)
+    
+    return domain_pairs, merged_vocab</code></pre>
+            </div>
+
+            <h3>2. 模型准备</h3>
+            <div class="implementation">
+                <p>加载预训练模型并准备微调：</p>
+                <pre><code class="python">
+def prepare_model_for_finetuning(pretrained_path, merged_vocab_size):
+    """准备模型进行微调"""
+    # 加载预训练模型
+    checkpoint = torch.load(pretrained_path, map_location=device)
+    
+    # 创建新模型实例
+    model = Transformer(
+        src_vocab_size=len(merged_vocab),
+        tgt_vocab_size=merged_vocab_size,
+        d_model=512,
+        nhead=8,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        dim_feedforward=2048,
+        dropout=0.1
+    )
+    
+    # 加载预训练权重
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    # 冻结编码器参数
+    for param in model.encoder.parameters():
+        param.requires_grad = False
+    
+    return model</code></pre>
+            </div>
+        </section>
+
+        <section id="finetune">
+            <h2>微调过程</h2>
+            
+            <h3>1. 微调配置</h3>
+            <div class="implementation">
+                <p>设置微调的超参数和优化器：</p>
+                <pre><code class="python">
+# 微调参数
+finetune_params = {
+    'batch_size': 16,  # 较小的批次大小
+    'num_epochs': 20,  # 较少的训练轮数
+    'learning_rate': 1e-5,  # 较小的学习率
+    'warmup_steps': 1000,  # 较少的预热步数
+    'max_grad_norm': 1.0,
+    'early_stopping_patience': 5
+}
+
+# 优化器设置
+optimizer = torch.optim.AdamW(
+    filter(lambda p: p.requires_grad, model.parameters()),
+    lr=finetune_params['learning_rate'],
+    betas=(0.9, 0.98),
+    eps=1e-9,
+    weight_decay=0.01  # 添加权重衰减
+)</code></pre>
+            </div>
+
+            <h3>2. 渐进式解冻</h3>
+            <div class="implementation">
+                <p>实现渐进式解冻策略：</p>
+                <pre><code class="python">
+def progressive_unfreeze(model, current_epoch, total_epochs):
+    """渐进式解冻模型层"""
+    if current_epoch < total_epochs // 3:
+        # 只训练解码器
+        for param in model.encoder.parameters():
+            param.requires_grad = False
+    elif current_epoch < total_epochs * 2 // 3:
+        # 解冻编码器的后半部分
+        layers_to_unfreeze = model.encoder.layers[3:]
+        for layer in layers_to_unfreeze:
+            for param in layer.parameters():
+                param.requires_grad = True
+    else:
+        # 解冻所有层
+        for param in model.parameters():
+            param.requires_grad = True</code></pre>
+            </div>
+
+            <h3>3. 微调训练循环</h3>
+            <div class="implementation">
+                <p>实现微调的训练循环：</p>
+                <pre><code class="python">
+def finetune_epoch(model, dataloader, optimizer, criterion, scheduler):
+    """执行一个微调轮次"""
+    model.train()
+    total_loss = 0
+    
+    for batch in dataloader:
+        src, tgt = batch
+        src = src.to(device)
+        tgt = tgt.to(device)
+        
+        optimizer.zero_grad()
+        
+        # 使用混合精度训练
+        with torch.cuda.amp.autocast():
+            output = model(src, tgt[:, :-1])
+            loss = criterion(
+                output.contiguous().view(-1, output.size(-1)),
+                tgt[:, 1:].contiguous().view(-1)
+            )
+        
+        # 反向传播
+        loss.backward()
+        
+        # 梯度裁剪
+        torch.nn.utils.clip_grad_norm_(
+            filter(lambda p: p.requires_grad, model.parameters()),
+            finetune_params['max_grad_norm']
+        )
+        
+        optimizer.step()
+        scheduler.step()
+        
+        total_loss += loss.item()
+    
+    return total_loss / len(dataloader)</code></pre>
+            </div>
+        </section>
+
+        <section id="techniques">
+            <h2>高级技巧</h2>
+            
+            <div class="note">
+                <h3>1. 知识蒸馏</h3>
+                <p>使用知识蒸馏来保持模型的通用能力：</p>
+                <pre><code class="python">
+class DistillationLoss(nn.Module):
+    def __init__(self, temperature=2.0, alpha=0.5):
+        super().__init__()
+        self.temperature = temperature
+        self.alpha = alpha
+        self.ce_loss = nn.CrossEntropyLoss(ignore_index=0)
+        self.kl_loss = nn.KLDivLoss(reduction='batchmean')
+    
+    def forward(self, student_logits, teacher_logits, targets):
+        # 硬标签损失
+        ce_loss = self.ce_loss(student_logits, targets)
+        
+        # 软标签损失
+        soft_student = F.log_softmax(student_logits / self.temperature, dim=-1)
+        soft_teacher = F.softmax(teacher_logits / self.temperature, dim=-1)
+        kl_loss = self.kl_loss(soft_student, soft_teacher) * (self.temperature ** 2)
+        
+        # 组合损失
+        return self.alpha * ce_loss + (1 - self.alpha) * kl_loss</code></pre>
+            </div>
+
+            <div class="note">
+                <h3>2. 对抗训练</h3>
+                <p>实现对抗训练来提高模型鲁棒性：</p>
+                <pre><code class="python">
+def fgm_attack(model, epsilon=0.25):
+    """实现FGM对抗训练"""
+    for name, param in model.named_parameters():
+        if param.requires_grad and param.grad is not None:
+            norm = torch.norm(param.grad)
+            if norm != 0:
+                r_at = epsilon * param.grad / norm
+                param.data.add_(r_at)</code></pre>
+            </div>
+
+            <div class="warning">
+                <h3>注意事项</h3>
+                <ul>
+                    <li>监控验证集性能，避免过拟合领域数据</li>
+                    <li>保持适当的学习率，避免破坏预训练的知识</li>
+                    <li>使用梯度累积来增加等效批次大小</li>
+                    <li>定期评估通用领域的性能</li>
+                    <li>保存最佳检查点，以便回滚</li>
+                </ul>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">返回顶部</a>
+    </div>
+</body>
+</html> 

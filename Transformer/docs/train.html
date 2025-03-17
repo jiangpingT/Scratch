@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer 训练记录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        .info-block { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-left: 4px solid #4CAF50; 
+            background: #f9f9f9; 
+        }
+        .implementation {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        nav {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #34495e;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="#preparation">数据准备</a>
+            <a href="#training">训练流程</a>
+            <a href="#optimization">优化技巧</a>
+            <a href="#model-info">模型信息</a>
+        </nav>
+
+        <h1>Transformer 训练记录</h1>
+
+        <section id="preparation">
+            <h2>数据准备</h2>
+            
+            <h3>1. 数据预处理</h3>
+            <div class="implementation">
+                <p>在开始训练之前，需要对数据进行预处理：</p>
+                <pre><code class="python">def preprocess_data(src_file, tgt_file, max_length=100):
+    """预处理源语言和目标语言文本"""
+    src_texts = []
+    tgt_texts = []
+    
+    with open(src_file, 'r', encoding='utf-8') as f:
+        src_texts = [line.strip() for line in f]
+    
+    with open(tgt_file, 'r', encoding='utf-8') as f:
+        tgt_texts = [line.strip() for line in f]
+    
+    # 过滤过长的句子
+    filtered_pairs = [(s, t) for s, t in zip(src_texts, tgt_texts)
+                     if len(s.split()) <= max_length and len(t.split()) <= max_length]
+    
+    return filtered_pairs</code></pre>
+            </div>
+
+            <h3>2. 构建词表</h3>
+            <div class="implementation">
+                <p>为源语言和目标语言构建词表：</p>
+                <pre><code class="python">class Vocabulary:
+    def __init__(self, freq_threshold=2):
+        self.itos = {0: "<pad>", 1: "<sos>", 2: "<eos>", 3: "<unk>"}
+        self.stoi = {v: k for k, v in self.itos.items()}
+        self.freq_threshold = freq_threshold
+        
+    def build_vocabulary(self, sentence_list):
+        frequencies = {}
+        idx = 4
+        
+        for sentence in sentence_list:
+            for word in sentence.split():
+                frequencies[word] = frequencies.get(word, 0) + 1
+                
+                if frequencies[word] == self.freq_threshold:
+                    self.stoi[word] = idx
+                    self.itos[idx] = word
+                    idx += 1</code></pre>
+            </div>
+        </section>
+
+        <section id="training">
+            <h2>训练流程</h2>
+            
+            <h3>1. 训练配置</h3>
+            <div class="implementation">
+                <p>设置训练参数和优化器：</p>
+                <pre><code class="python"># 训练参数
+params = {
+    'batch_size': 32,
+    'num_epochs': 100,
+    'learning_rate': 0.0001,
+    'max_grad_norm': 1.0,
+    'warmup_steps': 4000
+}
+
+# 优化器设置
+optimizer = torch.optim.Adam(
+    model.parameters(), 
+    lr=params['learning_rate'],
+    betas=(0.9, 0.98), 
+    eps=1e-9
+)</code></pre>
+            </div>
+
+            <h3>2. 训练循环</h3>
+            <div class="implementation">
+                <p>实现训练循环，包含梯度裁剪和学习率调整：</p>
+                <pre><code class="python">def train_epoch(model, dataloader, optimizer, criterion, scheduler):
+    model.train()
+    total_loss = 0
+    
+    for batch in dataloader:
+        src, tgt = batch
+        src = src.to(device)
+        tgt = tgt.to(device)
+        
+        optimizer.zero_grad()
+        
+        # 前向传播
+        output = model(src, tgt[:, :-1])
+        
+        # 计算损失
+        loss = criterion(
+            output.contiguous().view(-1, output.size(-1)),
+            tgt[:, 1:].contiguous().view(-1)
+        )
+        
+        # 反向传播
+        loss.backward()
+        
+        # 梯度裁剪
+        torch.nn.utils.clip_grad_norm_(model.parameters(), params['max_grad_norm'])
+        
+        optimizer.step()
+        scheduler.step()
+        
+        total_loss += loss.item()
+    
+    return total_loss / len(dataloader)</code></pre>
+            </div>
+
+            <h3>3. 验证过程</h3>
+            <div class="implementation">
+                <p>实现验证函数，用于评估模型性能：</p>
+                <pre><code class="python">@torch.no_grad()
+def validate(model, dataloader, criterion):
+    model.eval()
+    total_loss = 0
+    
+    for batch in dataloader:
+        src, tgt = batch
+        src = src.to(device)
+        tgt = tgt.to(device)
+        
+        output = model(src, tgt[:, :-1])
+        loss = criterion(
+            output.contiguous().view(-1, output.size(-1)),
+            tgt[:, 1:].contiguous().view(-1)
+        )
+        
+        total_loss += loss.item()
+    
+    return total_loss / len(dataloader)</code></pre>
+            </div>
+        </section>
+
+        <section id="optimization">
+            <h2>优化技巧</h2>
+            
+            <div class="note">
+                <h3>1. 学习率调整</h3>
+                <p>使用Transformer论文中的学习率调度策略：</p>
+                <pre><code class="python">class TransformerLRScheduler:
+    def __init__(self, optimizer, d_model, warmup_steps):
+        self.optimizer = optimizer
+        self.d_model = d_model
+        self.warmup_steps = warmup_steps
+        self.current_step = 0
+
+    def step(self):
+        self.current_step += 1
+        lr = self.d_model ** (-0.5) * min(self.current_step ** (-0.5),
+            self.current_step * self.warmup_steps ** (-1.5))
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = lr</code></pre>
+            </div>
+        </section>
+
+        <section id="model-info">
+            <h2>模型基本信息</h2>
+            <div class="info-block">
+                <h3>epoch</h3>
+                <pre>100</pre>
+                <h3>model_state_dict</h3>
+                <pre>OrderedDict([('src_embedding.weight', tensor([[ 0.0121, -0.0384, -0.0347,  ...,  0.0623, -0.0345, -0.0404],
+        [ 0.0317, -0.0593, -0.0041,  ..., -0.0547, -0.0515,  0.0275],
+        [ 0.0081, -0.0629, -0.0218,  ...,  0.0692,  0.0576, -0.0663],
+        ...,
+        [ 0.0443, -0.0099, -0.0038,  ...,  0.0667,  0.0071, -0.0641],
+        [ 0.0053, -0.0017, -0.0087,  ...,  0.0344,  0.0455,  0.0618],
+        [-0.0766, -0.0555, -0.0215,  ..., -0.0713, -0.0495, -0.0153]])), ('tgt_embedding.weight', tensor([[ 0.0027,  0.0811, -0.0713,  ...,  0.0586,  0.0406, -0.0584],
+        [ 0.0192, -0.0005, -0.0807,  ..., -0.0620, -0.0526, -0.0736],
+        [-0.0057,  0.0441, -0.0137,  ...,  0.0848,  0.0031, -0.0472],
+        ...,
+        [ 0.0482, -0.0609, -0.0713,  ..., -0.0700,  0.0562, -0.0775],
+        [-0.0443, -0.0631,  0.0035,  ...,  0.0517,  0.0271,  0.0260],
+        [ 0.0320, -0.0481,  0.0239,  ...,  0.0606, -0.0482, -0.0181]])))</pre>
+            </div>
+        </section>
+    </div>
+    <a href="#" class="back-to-top">返回顶部</a>
+</body>
+</html>

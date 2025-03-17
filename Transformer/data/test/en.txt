@@ -1,0 +1,20 @@
+Hello world
+Good morning
+How are you?
+This is a test
+Machine learning is fun
+What's your name?
+Nice to meet you
+I am a student
+The weather is nice today
+I love programming
+Python is awesome
+Deep learning is amazing
+Natural language processing
+Artificial intelligence
+Big data analytics
+Cloud computing
+Software engineering
+Web development
+Mobile app development
+Data science

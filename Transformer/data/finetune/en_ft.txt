@@ -1,0 +1,5 @@
+Fine tune example 1
+Specialized domain data
+Custom model adaptation
+Transfer learning case
+Adaptation to new task

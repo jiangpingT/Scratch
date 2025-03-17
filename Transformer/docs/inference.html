@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer 推理过程 - 实现教程</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        /* 复用index.html的样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+        .implementation {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        nav {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="#inference">推理流程</a>
+            <a href="#beam-search">集束搜索</a>
+            <a href="#optimization">性能优化</a>
+        </nav>
+
+        <h1>Transformer 推理过程</h1>
+
+        <section id="inference">
+            <h2>推理流程</h2>
+            
+            <h3>1. 模型加载</h3>
+            <div class="implementation">
+                <p>加载训练好的模型和词表：</p>
+                <pre><code class="python">
+def load_model(model_path, src_vocab, tgt_vocab):
+    """加载训练好的模型"""
+    checkpoint = torch.load(model_path, map_location=device)
+    model = Transformer(
+        len(src_vocab),
+        len(tgt_vocab),
+        d_model=512,
+        nhead=8,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        dim_feedforward=2048,
+        dropout=0.1
+    )
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model = model.to(device)
+    model.eval()
+    return model</code></pre>
+            </div>
+
+            <h3>2. 文本预处理</h3>
+            <div class="implementation">
+                <p>将输入文本转换为模型可处理的格式：</p>
+                <pre><code class="python">
+def preprocess_text(text, vocab, max_length=100):
+    """预处理输入文本"""
+    # 分词
+    tokens = text.strip().split()
+    
+    # 截断过长的序列
+    if len(tokens) > max_length:
+        tokens = tokens[:max_length]
+    
+    # 转换为索引
+    token_ids = [vocab.stoi.get(token, vocab.stoi['&lt;unk&gt;']) for token in tokens]
+    
+    # 添加特殊标记
+    token_ids = [vocab.stoi['&lt;sos&gt;']] + token_ids + [vocab.stoi['&lt;eos&gt;']]
+    
+    return torch.LongTensor(token_ids).unsqueeze(0)</code></pre>
+            </div>
+        </section>
+
+        <section id="beam-search">
+            <h2>集束搜索</h2>
+            
+            <div class="implementation">
+                <p>实现集束搜索以获得更好的翻译结果：</p>
+                <pre><code class="python">
+class BeamSearchNode:
+    def __init__(self, hidden_state, prev_node, word_id, log_prob, length):
+        self.h = hidden_state
+        self.prev_node = prev_node
+        self.word_id = word_id
+        self.logp = log_prob
+        self.length = length
+        
+    def eval(self, alpha=0.6):
+        """计算得分，包含长度惩罚"""
+        return self.logp / float(self.length - 1 + 1e-6) ** alpha
+
+def beam_search(model, src, beam_width=5, max_length=100):
+    """使用集束搜索进行解码"""
+    model.eval()
+    
+    # 编码源序列
+    encoder_output = model.encode(src)
+    
+    # 初始化搜索节点
+    node = BeamSearchNode(
+        hidden_state=encoder_output,
+        prev_node=None,
+        word_id=tgt_vocab.stoi['&lt;sos&gt;'],
+        log_prob=0,
+        length=1
+    )
+    
+    nodes = PriorityQueue()
+    nodes.put((-node.eval(), node))
+    qsize = 1
+    
+    # 保存完成的候选序列
+    endnodes = []
+    
+    while True:
+        if qsize > 2000: break
+        
+        score, n = nodes.get()
+        decoder_input = torch.LongTensor([n.word_id]).to(device)
+        
+        if n.word_id == tgt_vocab.stoi['&lt;eos&gt;'] and n.prev_node != None:
+            endnodes.append((score, n))
+            if len(endnodes) >= beam_width:
+                break
+            continue
+        
+        # 解码当前时间步
+        decoder_output = model.decode_step(
+            decoder_input,
+            n.h,
+            None if n.prev_node is None else n.prev_node.h
+        )
+        
+        # 获取top-k个候选
+        log_prob, indexes = torch.topk(
+            F.log_softmax(decoder_output, dim=-1),
+            beam_width
+        )
+        
+        for new_k in range(beam_width):
+            decoded_t = indexes[0][new_k].view(-1)
+            log_p = log_prob[0][new_k].item()
+            
+            node = BeamSearchNode(
+                hidden_state=decoder_output,
+                prev_node=n,
+                word_id=decoded_t.item(),
+                log_prob=n.logp + log_p,
+                length=n.length + 1
+            )
+            
+            score = -node.eval()
+            nodes.put((score, node))
+            qsize += 1
+    
+    # 如果没有找到结束标记，选择得分最高的路径
+    if len(endnodes) == 0:
+        endnodes = [nodes.get() for _ in range(beam_width)]
+    
+    # 返回得分最高的序列
+    best_node = sorted(endnodes, key=lambda x: x[0])[0][1]
+    return get_sequence(best_node)</code></pre>
+            </div>
+
+            <div class="note">
+                <h3>集束搜索参数说明</h3>
+                <ul>
+                    <li><strong>beam_width</strong>: 搜索宽度，通常设置为4-10</li>
+                    <li><strong>max_length</strong>: 生成序列的最大长度</li>
+                    <li><strong>alpha</strong>: 长度惩罚因子，用于平衡短句和长句</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="optimization">
+            <h2>性能优化</h2>
+            
+            <div class="implementation">
+                <h3>1. 批处理推理</h3>
+                <p>实现批处理推理以提高处理速度：</p>
+                <pre><code class="python">
+def batch_translate(model, sentences, batch_size=32):
+    """批量翻译文本"""
+    translations = []
+    for i in range(0, len(sentences), batch_size):
+        batch = sentences[i:i + batch_size]
+        # 预处理批次
+        src_batch = [preprocess_text(sent, src_vocab) for sent in batch]
+        src_batch = pad_sequence(src_batch, batch_first=True, padding_value=src_vocab.stoi['&lt;pad&gt;'])
+        
+        # 执行翻译
+        with torch.no_grad():
+            output_batch = model.translate_batch(src_batch)
+        
+        # 后处理结果
+        for output in output_batch:
+            translation = ' '.join([tgt_vocab.itos[idx] for idx in output])
+            translations.append(translation)
+    
+    return translations</code></pre>
+            </div>
+
+            <div class="implementation">
+                <h3>2. 缓存优化</h3>
+                <p>实现编码器输出的缓存机制：</p>
+                <pre><code class="python">
+class TranslationCache:
+    def __init__(self, max_size=1000):
+        self.cache = {}
+        self.max_size = max_size
+    
+    def get(self, text):
+        """获取缓存的翻译结果"""
+        return self.cache.get(text)
+    
+    def add(self, text, translation):
+        """添加翻译结果到缓存"""
+        if len(self.cache) >= self.max_size:
+            # 移除最早的缓存
+            self.cache.pop(next(iter(self.cache)))
+        self.cache[text] = translation</code></pre>
+            </div>
+
+            <div class="warning">
+                <h3>注意事项</h3>
+                <ul>
+                    <li>在批处理时注意内存使用</li>
+                    <li>对于长文本，考虑分段处理</li>
+                    <li>使用缓存时注意内存占用</li>
+                    <li>定期清理不常用的缓存项</li>
+                </ul>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">返回顶部</a>
+    </div>
+</body>
+</html> 
