@@ -10,7 +10,7 @@
 ![图片文字识别工具.png](./images/media/image23.png)
 
 #### 学习教程
-我上 bilibili 上 找了好多视频学习，很多都太散，不系统，讲的让你感觉不明觉厉，其实没啥用。这个张老师的课，我个人觉得深入潜出，靠谱。值得推荐给大家（我在不同的渠道费了好大劲找到了视频、博客和代码之间的关系，有的博客是我在代码里看到的地址）。
+还是从头开始学习吧，没有捷径。我看过一些论文，但是觉得理解起来很费劲，我想我还是从简单的入手吧。我上 bilibili 上 找了好多视频学习，很多都太散，不系统，有的是讲论文的，让你感觉不明觉厉，其实没啥用，有的都是灌水课的，没有知识量，只有盗取过过来的宣传信息。这个张老师的课，我个人觉得深入潜出，靠谱，不仅仅给你讲背后的道理，还手把手教你怎么手搓大模型。值得推荐给大家（我在不同的渠道费了好大劲找到了视频、博客和代码之间的关系，有的博客是我在代码里看到的地址）。
 * 视频
     * [LLM张老师](https://www.bilibili.com/video/BV1JBPkeQEj9/?spm_id_from=333.999.0.0&vd_source=2c0f76983c4f568a4018e92a42a85e94)
 * 博客
@@ -34,7 +34,7 @@
 ##### - Git 命令
 ```bash
 git init
---这一步注意不能提交大文件，比如对于模型文件要创建 .gitignore
+--这一步注意不能提交大文件，比如对于模型文件要创建 .gitignore 或者直接删除模型文件后再提交。我被这个错误坑了 3 天，就是不知道我的代码为什么提交不上去，是我的网络问题，还是我的环境变量配置问题，还是我的命令问题。原来超过 100M 的文件不能提交到 github 上。
 
 git add .
 git commit -m "更新项目内容"
@@ -72,11 +72,11 @@ base_url = "https://ai-gateway.mininglamp.com/v1"
 api_key = "sk-47U8wXunKfnXrLv41815a2d7f904dE09d2e5a688199D5"
 ```
 
-备注：如果是其他项目需要openai的模型，有的可能通过配置OPENAI_BASE_URL这个环境变量来过渡`OPENAI_BASE_URL=https://ai-gateway.mininglamp.com/v1`
+备注：如果是其他项目需要openai的模型，有的可能通过配置OPENAI_BASE_URL这个环境变量来过渡`OPENAI_BASE_URL=https://ai-gateway.mininglamp.com/v1` ——这个指导来自于梦林，当时我还没有理解这句话，后来试错多了，就理解了，一切的真知都是实践出来的，否则别人告诉你，你也不理解。
 
-现在开发出来的开源项目，默认配置的都是 openai 的 key。虽然，可能有很多个api key 的调用选择，默认还是将我们的网关替换为 openaikey程序最容易调通。
+现在开发出来的开源项目，默认配置的都是 openai 的 key。虽然，可能有很多个api key 的调用选择，默认还是将我们的网关替换为 openaikey程序最容易调通。“与 OpenAI API 兼容” 或 “类 OpenAI API”，通常是指某个产品、服务或项目在功能、接口、请求 / 响应格式等方面与 OpenAI 的 API 具有相似性或一致性，使得开发者可以在不大量修改代码的情况下，将原本基于 OpenAI API 开发的应用程序或项目，切换到使用这些兼容的产品、服务或项目上，从而提供更多的选择和灵活性。
 
-##### - 也可以选用[openrouter](https://openrouter.ai/)提供的免费的模型 api key
+##### - 也可以选用[openrouter](https://openrouter.ai/)提供的免费的模型 api key，这里有gemini、Deepseek API key。
 
 #### 4）VPN
 * 一定不要凑活
@@ -431,30 +431,42 @@ tokens 或遇到结束标记。
 
 ### 2、大模型和大模型工具的理解
 
-* Claud 3.5和3.7使用体验最好
+* Claud 3.5和3.7使用体验最好，编程的性能也是最好的
 
-* Agent 编程，对比 UI-TARS 和owl，OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
+* Trae 或者 Cursor 对于执行命令行，下载包依赖，解决依赖冲突是非常可信的，绝对的高效
 
 * Cursor 真的做的很好，很好，使用 Auto 或者 Claud3.5 或者 Claud3.7就已经足够好
 
 * 在同一个时间，尽量少切换VS Code、Trae 或者 Cursor 的大模型
 
-  * 切换模型会丢掉上下文，如果必须切换，在你的命令执行前，一定让大模型遍历一遍整个工程，再开始执行命令。
+    * 切换模型会丢掉上下文，如果必须切换，在你的命令执行前，一定让大模型遍历一遍整个工程，再开始执行命令。
 
-* 大模型本身就对大模型的学习非常有帮助
+* 大模型本身就对大模型的学习有巨大有帮助
 
-  * 大模型对大模型的代码解读能力很好，看不懂的都基本可以问明白；
+    * 大模型对大模型代码的解读能力很好，在 IDE 中看不懂的都基本可以使用 Trae 或 Cursor 对话框问明白
 
-  * 大模型本身对大模型的生成能力也很好，基本能帮助完成你全部的代码，除了现在市面上还不存在的的优化和创新
+    * 大模型本身对大模型代码的生成能力也很好，基本能帮助完成你全部的代码，除了现在市面上还不存在的的优化和创新
 
-### 3、对海外编程不再恐惧
+    * 强烈推荐豆包桌面客户端，他其实就是一个浏览器，在学习论文、博客的时候，可以直接问它论文或者博客中的每一行代码，而且中英文翻译能力也不错，一点都不用担心看不懂英文
+    ![Pasted Graphic24.png](./images/media/image24.png)
 
-习惯了Github、Huggieface、Cursor、Discord、Ollama的使用环境，感觉我们也能做出海的软件
+    * 装上 Trae 或者 Cursor ，并开始真的使用它，我们工程师就等于拿到了大模型的船票
+
+
+* Agent 编程，对比 UI-TARS 和owl，OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
+
+### 3、对做出出海软件不再恐惧
+
+* 慢慢开始习惯Github、Huggieface、、Ollama、Cursor、Discord的使用环境，就会进入出海软件的磁场中，共振就会开始，慢慢就会涌现，感觉我们也能做出海的软件
+
+* 视频号还是有价值的，这些人虽然说的内容质量不一定高，但是，他们真的在帮我们获取最新的工具信息，他们在帮我们建索引，我们再去深度学习
+
+* 深度学习从下载并运行他们的开源代码或者开源模型才真正开始
 
 ### 4、意外收获
 
 * 发现了一个 AI工具排名站：[AI 工具导航网站 toolify](https://www.toolify.ai/zh/)
-    * 才明白这些中国套壳AI创新，都是从哪里学习的。这个网站应有尽有
+    * 才明白这些中国AI创新应用（套壳），都是从哪里学习的。这个网站应有尽有
 ![Pasted Graphic4.png](./images/media/image16.png)
 
 * 了解了Replicate：[在云上部署大模型](https://replicate.com/)
@@ -463,7 +475,7 @@ tokens 或遇到结束标记。
 ![RunAI.png](./images/media/image17.png)
 
 * 理解了为啥他们会选择在 Discord 维护自己的软件
-    * Discord 的社交平台属性，本身就方便这些软件推广
+    * Discord 的社交平台属性，本身就方便这些软件社交推广
 ![Pasted Graphic5.png](./images/media/image18.png)
 
 ## 四、未来计划
@@ -487,3 +499,5 @@ tokens 或遇到结束标记。
 * 系统学习其他基础资料
 
     * 学习：[LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
+
+* 坚持和全面使用 Cursor ，相信它是我个人抓住大模型船票的最佳小切口
