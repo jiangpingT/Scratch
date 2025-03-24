@@ -79,7 +79,10 @@ api_key = "sk-47U8wXunKWfnXrLv41815a2d7f904dE09d2e5a688199D5"
 #### 1）制作一个小工具
 OCR 识别 （Trae-CN、Manus、MGX）
 
-Prompt：创建一个页面，功能是上传一张图片，识别里面的文本，后端使用python，前端使用js。请调用PaddleOCR库
+Prompt：
+```
+创建一个页面，功能是上传一张图片，识别里面的文本，后端使用python，前端使用js。请调用PaddleOCR库
+```
 
 #####  - Trae-CN（Deepseek-R1）
 
@@ -107,7 +110,10 @@ Prompt：创建一个页面，功能是上传一张图片，识别里面的文�
 
 制作科比的个人网站 （Trae-CN、Cursor、Manus）
 
-Prompt：请帮我生成一个kobe个人网站的主页，你可以通过互联网获取尽量多他的信息，风格要求热血。
+Prompt：
+```
+请帮我生成一个kobe个人网站的主页，你可以通过互联网获取尽量多他的信息，风格要求热血。
+```
 
 要求：
 
@@ -145,7 +151,6 @@ step by step，同时能记录每个步骤完成的进度。
 Transformer （Cursor-Default）
 
 Prompt：
-
 ```
 需求：请帮我在Transformer文件夹下，创建一个大模型的代码，至少包括model.py，train.py，inference.py和finetune.py，以及可训练、推理和微调的数据集。请尽量给我详细的中文注释方便我一步一步的学习，也要确保每一个py我能够自己运行测试（备注：我的电脑是Macbook Pro，电脑的芯片是Apple M4 Pro，内存48G）
 
