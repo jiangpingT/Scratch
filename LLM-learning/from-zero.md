@@ -215,7 +215,7 @@ Prompt：
 * huggieface 上会存放各个厂家的模型和数据
 * github 上会存放源代码。但是，不可能存储大的文件，单个文件不能超过 100M，所以大文件只能放到 huggieface 上
 
-#### 1）本地下载和运行开源模型
+#### 1）本地下载和运行开源模型命令
 Type：开源模型
 
 ##### - 本地下载开源模型
@@ -244,7 +244,7 @@ huggingface-cli download bytedance-research/UI-TARS-7B-DPO \--local-dir
 ./UI-TARS-7B-DPO
 ```
 
-##### - 本地运行开源模型
+##### - 本地运行开源模型命令
 Type：开源模型
 
 ✨Ollama
@@ -455,7 +455,7 @@ tokens 或遇到结束标记。
 
 * Agent 编程，对比 UI-TARS 和owl，OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
 
-### 3、对做出出海软件不再恐惧
+### 3、对做出海软件不再恐惧
 
 * 慢慢开始习惯Github、Huggieface、、Ollama、Cursor、Discord的使用环境，就会进入出海软件的磁场中，共振就会开始，慢慢就会涌现，感觉我们也能做出海的软件
 
