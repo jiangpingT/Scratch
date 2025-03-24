@@ -201,43 +201,22 @@ huggingface-cli download bytedance-research/UI-TARS-7B-DPO \--local-dir
 ✨Ollama
 ```bash
 brew install ollama
-
 ollama serve
-
 ollama pull llama2
-
 ollama run llama2
-
 ollama list
-
 ollama show llama2
-
 ollama rm llama2---命令删除本地模型
 
 Ollama 提供了 HTTP API，你可以使用 curl 等工具进行 API 调用
-
 curl http://localhost:11434/api/generate -d '{"model": "llama2","prompt": "Tell me a joke."}'
-
-举例：
-
-ollama pull avil/UI-TARS
-
-ollama run avil/UI-TARS
-
-ollama run rashakol/UI-TARS-72B-DPO
 ```
 
 ✨vllm
 ```bash
-python -m vllm.entrypoints.openai.api_server --served-model-name ui -
-tars --model <path to your model>
+python -m vllm.entrypoints.openai.api_server --served-model-name ui-tars --model <path to your model>
 
 启动 OpenAI 兼容的 API服务。这里的<path to your model>是你下载的 UI - TARS 模型的路径。
-
-输入 API 信息：在 UI - TARS 应用程序的设置中输入你的 API 信息。VLM 基础URL 是与 OpenAI 兼容的 API 端点。
-
-python -m vllm.entrypoints.openai.api_server --served-model-name
-ui-tars --model ../UI-TARS-7B-DPO --device cpu
 ```
 
 ✨Transfermers库
@@ -421,41 +400,38 @@ tokens 或遇到结束标记。
 
 ### 4、意外收获
 
-1）发现了一个 AI
-工具排名站：[AI 工具导航网站 toolify](https://www.toolify.ai/zh/)
+* 发现了一个 AI工具排名站：[AI 工具导航网站 toolify](https://www.toolify.ai/zh/)
 
 ![Pasted Graphic4.png](./images/media/image16.png)
 
-2）了解了
-Replicate：[在云上部署大模型](https://replicate.com/)
-Replicate 为数据科学家和开发人员提供了完整的大模型开发托管服务，涵盖数据标注、模型训练、版本控制、性能监控等各个流程。
-主张是：使用API运行AI。运行和微调模型，大规模部署自定义模型，只需一行代码即可完成。
+* 了解了Replicate：[在云上部署大模型](https://replicate.com/)
+    * Replicate 为数据科学家和开发人员提供了完整的大模型开发托管服务，涵盖数据标注、模型训练、版本控制、性能监控等各个流程。
+    * 主张是：使用API运行AI。运行和微调模型，大规模部署自定义模型，只需一行代码即可完成。
 ![RunAI.png](./images/media/image17.png)
 
-3）理解了为啥他们会选择在 Discord 维护自己的软件
+* 理解了为啥他们会选择在 Discord 维护自己的软件
 
 ![Pasted Graphic5.png](./images/media/image18.png)
 
 ## 四、未来计划
 
-### 1、逐步完成大模型的全人工开发
+* 逐步完成大模型的全人工开发
+    * 继续系统学习
+        * 学习：[Transformer-from-scratch](http://github.com/waylandzhang/Transformer-from-scratch)
+        * 最重要要知道 why，为什么要这样实现，这一行代码的意思是什么
 
-* 继续系统学习
-  * 学习：[Transformer-from-scratch](http://github.com/waylandzhang/Transformer-from-scratch)
-  * 最重要要知道 why，为什么要这样实现，这一行代码的意思是什么
+    * 尝试用类的方式实现 model、train、inference、GRPO
 
-* 尝试用类的方式实现 model、train、inference、GRPO
+* 逐步完成 Agent 的全人工开发
 
-### 2、逐步完成 Agent 的全人工开发
+    * 学习 OpenManus 代码
 
-* 学习 OpenManus 代码
+    * 尝试自己手动完成 OpenManus 代码的复写
 
-* 尝试自己手动完成 OpenManus 代码的复写
+* 参与到每天的研发例会
 
-### 3、参与到每天的研发例会
+* 完成博士毕业设计和毕业论文，2025 年 12 月底前毕业
 
-### 4、完成博士毕业设计和毕业论文，2025 年 12 月底前毕业
+* 系统学习其他基础资料
 
-### 5、系统学习其他基础资料
-
-* 学习：[LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
+    * 学习：[LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
