@@ -1,12 +1,14 @@
 # From zero to ...
 
 ## 背景故事
-手搓大模型：我在跟手搓大模型的 kol/koc 学习。传言的版本是我已经能够手搓大模型。我现在还不能手搓大模型，只能说刚刚入门。
+手搓大模型：我正在跟手搓大模型的 kol/koc 学习。传言的版本是我已经能够手搓大模型。我现在还不能手搓大模型，只能说刚刚入门。
 
 ## 一、学习阶段
 ### 1、纯学习
 #### 不自量力
-2 月 26 日，装了 VSCode，梦林帮我下载了 [open-r1](https://github.com/huggingface/open-r1)，梦林太看起我了，我啥都看不懂，无从下手。
+2 月 26 日，装了 VS Code，梦林帮我下载了 [open-r1](https://github.com/huggingface/open-r1)，梦林太看起我了，我啥都看不懂，无从下手。
+![图片文字识别工具.png](./images/media/image23.png)
+
 #### 学习教程
 我上 bilibili 上 找了好多视频学习，很多都太散，不系统，讲的让你感觉不明觉厉，其实没啥用。这个张老师的课，我个人觉得深入潜出，靠谱。值得推荐给大家（我在不同的渠道费了好大劲找到了视频、博客和代码之间的关系，有的博客是我在代码里看到的地址）。
 * 视频
@@ -184,15 +186,17 @@ Prompt：
 * 无奈还只能切回到 Deepseek-R1，Deepseek-R1 好一些，我没遇到过排队的情况，但是也经常出现连接不到服务器的现象。
 * 我就只好切换到 Deepseek V3。反复的切换上下文都丢失了，每次切换模型都像是一个第一次见到这个代码的人，又给我胡乱重新给修改建议，我实在不敢相信他们的建议，因为很多代码我也看不懂，我也不知道它的修改是否靠谱。
 
-##### - Cursor-Default
+##### - Cursor-Default/Auto
 感谢 Cursor，在我再次准备放弃的时候，我想要不试试 Cursor。我先试用的 Cursor 免费版，免费版有一定的 token 试用限制。
 * Cursor 免费版功能跟收费版本是一样的，只是 token 受限，我是用了Default 模式，Default 模式试用的应该是 Claud-3.5 模型，效果非常好。我就随便捯饬几下，代码就跑通了。
 * 太震撼了，第一次感受到，这个不是玩具了，是真的能搞定复杂代码。我的初步评价 Trae-CN和 Trae 还是一个工程师的玩具，还有很多工程的细节需要打磨。但是，Cursor 真的已经工程化很好了，真的是生产力工具。
+* 最重要他不用等待，调用模型速度非常非常快。
+* 我是用的感受Cursor 本身就具备记录上下文的能力。
 * 最后 通过反复编码，反复调试。model.py 和 train.py能够正常运行，并存储了model：model_best.pth。同时我还生成了一个简单的教程：[外网访问链接](https://jiangpingt.github.io/Scratch/Transformer/docs/index.html)
 ![Pasted Graphic11.png](./images/media/image7.png)
 
 #### 4）生成Agent
-使用工具：Cursor-Default
+使用工具：Cursor-Default/Auto
 
 基于 开源代码 owl ，gaia 测试跑了 10几分，全部使用Cursor重新写的代码，写了2 天。------后来被我误删除了😭！git命令 使用不熟练，把我本地代码覆盖了。
 
