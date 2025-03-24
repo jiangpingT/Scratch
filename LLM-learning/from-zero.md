@@ -44,7 +44,7 @@ git push origin main
 我发布的网站：
 * [Scratch-Transfomer](https://jiangpingt.github.io/Scratch/Transformer/docs/)
 * [Scratch-kobe](https://jiangpingt.github.io/Scratch/kobe/)
-* [Scratch-tep-by-step](https://jiangpingt.github.io/Scratch/LLM-learning/step-by-stepT/step-by-stepT.html)
+* [Scratch-tep-by-step](https://github.com/jiangpingT/Scratch/blob/main/LLM-learning/step-by-stepT/step-by-stepT.md)
 
 #### 3）API Key
 ##### - 我们自己的网关
@@ -225,7 +225,8 @@ python -m vllm.entrypoints.openai.api_server --served-model-name ui-tars --model
 ```
 
 ✨Transfermers库
-transformers库直接运行模型，这应该能更好地支持Apple Silicon：
+
+transformers库直接运行模型，这应该能更好地支持Apple电脑芯片
 ```bash
 pip install transformers gradio torch scipy
 
@@ -273,7 +274,7 @@ Get the current weather in Beijing using the web browser
 
 ✨owl-gaia
 
-我运行了很久，调试了 2 天，但是得分也没有到58.18。而且，跑这些测试用例估计要用 1-2 天，我多次被终端，最后运行了将近3 天，跑出了 Level1 、Level2 和 Level3 的结果，但是，结果也并不理想。
+我运行了很久，调试了 2 天，但是得分也没有到58.18。而且，跑这些测试用例估计要用 1-2 天，我多次被终端，最后运行了将近3 天，跑出了 Level1 、Level2 和 Level3 的结果，但是，结果也并不理想19.67 分。
 
 ![Pasted Graphic15.png](./images/media/image14.png)
 
@@ -296,7 +297,7 @@ pnpm run dev:agent-tars
 
 ![Pasted Graphic21.png](./images/media/image21.png)
 
-[外网访问链接：jiangpingT's step-by-stepT](https://jiangpingt.github.io/Scratch/LLM-learning/step-by-stepT/step-by-stepT.html)
+[外网访问链接：jiangpingT's step-by-stepT](https://jiangpingt.github.io/Scratch/LLM-learning/step-by-stepT/step-by-stepT.md)
 
 2）assemble-into-a-class
 
