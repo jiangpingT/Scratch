@@ -33,6 +33,9 @@
 #### 2）Github
 ##### - Git 命令
 ```bash
+git clone https://huggingface.co/bytedance-research/UI-TARS-7B-DPO
+git clone https://github.com/browser-use/browser-use
+
 git init
 --这一步注意不能提交大文件，比如对于模型文件要创建 .gitignore 或者直接删除模型文件后再提交。我被这个错误坑了 3 天，就是不知道我的代码为什么提交不上去，是我的网络问题，还是我的环境变量配置问题，还是我的命令问题。原来超过 100M 的文件不能提交到 github 上。
 
@@ -328,9 +331,22 @@ Get the current weather in Beijing using the web browser
 
 ✨UI-TARS
 
+我主要测试了 Agent-TARS 功能，UI-TARS 没有测试，Agent-Tars 还相对早起，持续观察它未来的演进。
+```
 pnpm run dev:agent-tars
-
+```
 ![Pasted Graphic2.png](./images/media/image15.png)
+
+✨browser-use
+```
+python examples/ui/gradio_demo.py
+```
+Prompt：
+```
+Go to google.com and search for "hello world"
+```
+实在是太好用了，真的是我用过最好的 agent 之一，冲击力大，用户体验做的极好。强烈建议推荐试用。
+![Pasted Graphic25.png](./images/media/image25.png)
 
 ### 4、Code LLM step by step
 主要学习了
@@ -367,7 +383,7 @@ pnpm run dev:agent-tars
 7. 学术论文检索 - 搜索最近发表的关于大语言模型的论文 - 提取论文的主要发现和结论 - 生成研究综述 
 8. 系统集成测试 - 将所有结果整合到一个完整的报告中 - 使用不同的格式（Markdown、HTML）导出 - 生成执行日志和性能报告
 ```
-### 2、分布运行，不要想着一次性运行
+### 2、分步运行，不要想着一次性运行
 
 运行时间实在太长了，中间会出现各种 bug：
 
@@ -463,7 +479,7 @@ tokens 或遇到结束标记。
     * 装上 Trae 或者 Cursor ，并开始真的使用它，我们工程师就等于拿到了大模型的船票
 
 
-* Agent 编程，对比 UI-TARS 和owl，个人感觉OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
+* Agent 编程，对比 UI-TARS 和owl，个人感觉OpenManus 还是最好用的通用 Agent 框架，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）。browser_use 作为专门操作浏览器的 专用Agent 真的做的很棒，很棒。
 
 ### 3、对做出海软件不再恐惧
 
