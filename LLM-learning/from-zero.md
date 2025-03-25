@@ -345,6 +345,8 @@ Prompt：
 ```
 Go to google.com and search for "hello world"
 ```
+[内网访问链接](http://127.0.0.1:7861/)
+
 实在是太好用了，真的是我用过最好的 agent 之一，冲击力大，用户体验做的极好。强烈建议推荐试用。
 ![Pasted Graphic25.png](./images/media/image25.png)
 
