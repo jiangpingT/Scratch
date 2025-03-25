@@ -62,19 +62,19 @@ git push origin main
 ```python
 model = "gpt-4o"
 base_url = "https://ai-gateway.mininglamp.com/v1"
-api_key = "sk-47U8XunKWfnXrLv41815a2d7f904dE09d2e5a688199D5"
+api_key = "sk-xx"
 
 model = "claude-3-7-sonnet"
 base_url = "https://ai-gateway.mininglamp.com/v1"
-api_key = "sk-47U8wXunWfnXrLv41815a2d7f904dE09d2e5a688199D5"
+api_key = "sk-xx"
 
 model = "deepseek-reasoner"
 base_url = "https://ai-gateway.mininglamp.com/v1"
-api_key = "sk-47U8wXunKWfnXrLv41815a2d7904dE09d2e5a688199D5"
+api_key = "sk-xx"
 
 model = "gemini-2.0-flash"
 base_url = "https://ai-gateway.mininglamp.com/v1"
-api_key = "sk-47U8wXunKfnXrLv41815a2d7f904dE09d2e5a688199D5"
+api_key = "sk-xx"
 ```
 
 备注：如果是其他项目需要openai的模型，有的可能通过配置OPENAI_BASE_URL这个环境变量来过渡`OPENAI_BASE_URL=https://ai-gateway.mininglamp.com/v1` ——这个指导来自于梦林，当时我还没有理解这句话，后来试错多了，就理解了，一切的真知都是实践出来的，否则别人告诉你，你也不理解。
@@ -302,6 +302,8 @@ Type：开源代码
 
 ✨OpenManus
 
+⭐️39.2K
+
 Prompt：
 ```
 Get the current weather in Beijing using the web browser
@@ -317,6 +319,8 @@ Get the current weather in Beijing using the web browser
 
 ✨owl-agent
 
+⭐️13.8K
+
 也是调试了很久，主要解决不了 open api key的问题，后来反复尝试，解决了，还是自己不熟练。
 
 [内网访问链接](http://localhost:7860/)
@@ -331,6 +335,8 @@ Get the current weather in Beijing using the web browser
 
 ✨UI-TARS
 
+⭐️3.2k
+
 我主要测试了 Agent-TARS 功能，UI-TARS 没有测试，Agent-Tars 还相对早起，持续观察它未来的演进。
 ```
 pnpm run dev:agent-tars
@@ -338,6 +344,9 @@ pnpm run dev:agent-tars
 ![Pasted Graphic2.png](./images/media/image15.png)
 
 ✨browser-use
+
+⭐️48k
+
 ```
 python examples/ui/gradio_demo.py
 ```
