@@ -463,7 +463,7 @@ tokens 或遇到结束标记。
     * 装上 Trae 或者 Cursor ，并开始真的使用它，我们工程师就等于拿到了大模型的船票
 
 
-* Agent 编程，对比 UI-TARS 和owl，OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
+* Agent 编程，对比 UI-TARS 和owl，个人感觉OpenManus 还是最好用的，代码简单，在github 上的🌟39.2K也是证明 （OpenManus 39.2K VS owl 13.8K VS UI-TARS 3.2k）
 
 ### 3、对做出海软件不再恐惧
 
@@ -500,8 +500,6 @@ tokens 或遇到结束标记。
     * 尝试自己完成 OpenManus 代码的复写
 
 * 参与到每天的研发例会，跟着大家实战学习
-
-* 完成博士毕业设计和毕业论文，争取 2025 年 12 月底前毕业
 
 * 系统学习其他基础资料
 
