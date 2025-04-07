@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前馈神经网络动态介绍</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            background-color: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-left: 4px solid #e74c3c;
+            background-color: #ebf5fb;
+        }
+        
+        .formula-container {
+            background-color: #fef9e7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-size: 18px;
+            color: #c0392b;
+            text-align: center;
+        }
+        
+        .neural-network {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .layer {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        
+        .neuron {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 10px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .connection {
+            position: absolute;
+            background-color: rgba(52, 152, 219, 0.3);
+            z-index: -1;
+        }
+        
+        .input-layer {
+            left: 10%;
+        }
+        
+        .hidden-layer {
+            left: 45%;
+        }
+        
+        .output-layer {
+            left: 80%;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .visualization {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .visual-box {
+            width: 200px;
+            height: 150px;
+            border: 1px solid #ddd;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .visual-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .highlight {
+            animation: highlight 1.5s ease-in-out;
+        }
+        
+        @keyframes highlight {
+            0% { background-color: #3498db; color: white; }
+            100% { background-color: initial; color: initial; }
+        }
+        
+        .math-symbol {
+            font-size: 24px;
+            margin: 0 10px;
+        }
+        
+        .loss-graph {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            border: 1px solid #ddd;
+            background-color: white;
+            margin: 20px 0;
+        }
+        
+        .graph-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #3498db;
+        }
+        
+        .graph-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #e74c3c;
+            transform: translate(-4px, -4px);
+        }
+        
+        .graph-label {
+            position: absolute;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider {
+            width: 100%;
+        }
+        
+        /* 新增样式：静态高亮连接线 */
+        .highlight-connection {
+            background-color: rgba(231, 76, 60, 0.5) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>前馈神经网络与深度学习基础</h1>
+        <p>前馈神经网络是深度学习的基础架构，广泛应用于大模型的训练和推理。下面通过6个关键步骤介绍其核心原理。</p>
+    </div>
+    
+    <div class="container">
+        <div class="step" id="step1">
+            <h2>1. 神经网络基本结构</h2>
+            <p>前馈神经网络由输入层、隐藏层和输出层组成，每层包含多个神经元（节点）。</p>
+            
+            <div class="neural-network" id="network1">
+                <!-- 神经网络可视化将通过JavaScript动态生成 -->
+            </div>
+            
+            <p>数据从输入层流向输出层，没有反馈连接。每个神经元接收前一层所有神经元的输入，经过加权求和和激活函数处理后输出。</p>
+        </div>
+        
+        <div class="step" id="step2">
+            <h2>2. 前向传播（推理）</h2>
+            <p>给定输入x，网络通过前向传播计算输出ŷ：</p>
+            
+            <div class="formula-container">
+                <div class="formula">
+                    z<sup>[l]</sup> = W<sup>[l]</sup> a<sup>[l-1]</sup> + b<sup>[l]</sup>
+                </div>
+                <div class="formula">
+                    a<sup>[l]</sup> = σ(z<sup>[l]</sup>)
+                </div>
+            </div>
+            
+            <div class="visualization">
+                <div class="visual-box" id="weights-vis">
+                    <canvas id="matrixCanvas" width="180" height="130"></canvas>
+                </div>
+                <div class="visual-box" id="activation-vis">
+                    <canvas id="functionCanvas" width="180" height="130"></canvas>
+                </div>
+            </div>
+            
+            <p>其中：</p>
+            <ul>
+                <li>W<sup>[l]</sup> 是第l层的权重矩阵</li>
+                <li>b<sup>[l]</sup> 是偏置向量</li>
+                <li>σ 是激活函数（如ReLU、sigmoid）</li>
+                <li>a<sup>[l]</sup> 是第l层的激活值</li>
+            </ul>
+        </div>
+        
+        <div class="step" id="step3">
+            <h2>3. 损失函数</h2>
+            <p>衡量预测输出ŷ与真实标签y之间的差异。对于分类问题常用交叉熵损失：</p>
+            
+            <div class="formula-container">
+                <div class="formula">
+                    L(y, ŷ) = -Σ [y<sub>i</sub> log(ŷ<sub>i</sub>) + (1-y<sub>i</sub>)log(1-ŷ<sub>i</sub>)]
+                </div>
+            </div>
+            
+            <p>对于回归问题常用均方误差：</p>
+            <div class="formula-container">
+                <div class="formula">
+                    L(y, ŷ) = ½(y - ŷ)<sup>2</sup>
+                </div>
+            </div>
+            
+            <div class="loss-graph" id="lossGraph">
+                <!-- 损失函数图形将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="controls">
+                <button id="showMSE">显示MSE</button>
+                <button id="showCrossEntropy">显示交叉熵</button>
+            </div>
+        </div>
+        
+        <div class="step" id="step4">
+            <h2>4. 反向传播与梯度</h2>
+            <p>通过链式法则计算损失函数对各参数的梯度：</p>
+            
+            <div class="formula-container">
+                <div class="formula">
+                    ∂L/∂W<sup>[l]</sup> = (∂L/∂a<sup>[l]</sup>) ⊙ σ'(z<sup>[l]</sup>) · a<sup>[l-1]</sup>T
+                </div>
+                <div class="formula">
+                    ∂L/∂b<sup>[l]</sup> = Σ (∂L/∂a<sup>[l]</sup>) ⊙ σ'(z<sup>[l]</sup>)
+                </div>
+            </div>
+            
+            <p>梯度表示损失函数在参数空间的变化方向和速率，是优化网络的关键。</p>
+            
+            <div class="visualization">
+                <div class="visual-box" id="gradient-vis">
+                    <canvas id="gradientCanvas" width="180" height="130"></canvas>
+                </div>
+                <div class="visual-box" id="chain-rule-vis">
+                    <div>
+                        <div>链式法则</div>
+                        <div style="font-size: 40px;">∂L/∂W = ∂L/∂ŷ · ∂ŷ/∂z · ∂z/∂W</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step" id="step5">
+            <h2>5. 参数更新</h2>
+            <p>使用梯度下降算法更新参数：</p>
+            
+            <div class="formula-container">
+                <div class="formula">
+                    W<sup>[l]</sup> = W<sup>[l]</sup> - α · ∂L/∂W<sup>[l]</sup>
+                </div>
+                <div class="formula">
+                    b<sup>[l]</sup> = b<sup>[l]</sup> - α · ∂L/∂b<sup>[l]</sup>
+                </div>
+            </div>
+            
+            <p>其中α是学习率，控制每次更新的步长。</p>
+            
+            <div class="slider-container">
+                <label for="learningRate">学习率 α: <span id="lrValue">0.1</span></label>
+                <input type="range" id="learningRate" min="0.01" max="1" step="0.01" value="0.1" class="slider">
+            </div>
+            
+            <div id="optimizationPath" style="width: 100%; height: 200px; border: 1px solid #ddd; position: relative;">
+                <canvas id="optimizationCanvas" width="800" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="step" id="step6">
+            <h2>6. 训练流程总结</h2>
+            <ol>
+                <li>初始化网络参数（权重和偏置）</li>
+                <li>前向传播计算预测输出</li>
+                <li>计算损失函数值</li>
+                <li>反向传播计算梯度</li>
+                <li>使用梯度下降更新参数</li>
+                <li>重复2-5步直到收敛</li>
+            </ol>
+
+            <div class="controls">
+                <button id="trainNetwork">模拟训练过程</button>
+            </div>
+            
+            <div id="trainingProgress" style="margin-top: 20px; display: none;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>迭代次数: <span id="iterationCount">0</span></span>
+                    <span>当前损失: <span id="currentLoss">0</span></span>
+                </div>
+                <div style="height: 20px; background-color: #ecf0f1; margin-top: 10px; border-radius: 10px;">
+                    <div id="progressBar" style="height: 100%; width: 0%; background-color: #2ecc71; border-radius: 10px;"></div>
+                </div>
+            </div>
+            <p>简化总结：</p>
+            <ol>
+                <li>前向传播：计算输出 ŷ = f(x; W, b) 和损失 L(y, ŷ)</li>
+                <li>反向传播：计算梯度 ∂L/∂ŷ：∂L/∂W, ∂L/∂b</li>
+                <li>参数更新：W = W - α·(∂L/∂W) 和 b = b - α·(∂L/∂b)</li>
+            </ol>
+            
+        </div>
+    </div>
+    
+    <script>
+        // 1. 神经网络可视化
+        function drawNeuralNetwork() {
+            const container = document.getElementById('network1');
+            container.innerHTML = '';
+            
+            // 创建层
+            const inputLayer = document.createElement('div');
+            inputLayer.className = 'layer input-layer';
+            
+            const hiddenLayer = document.createElement('div');
+            hiddenLayer.className = 'layer hidden-layer';
+            
+            const outputLayer = document.createElement('div');
+            outputLayer.className = 'layer output-layer';
+            
+            // 添加神经元
+            const inputNeurons = 3;
+            const hiddenNeurons = 4;
+            const outputNeurons = 2;
+            
+            // 输入层
+            for (let i = 0; i < inputNeurons; i++) {
+                const neuron = document.createElement('div');
+                neuron.className = 'neuron';
+                neuron.textContent = `x${i+1}`;
+                inputLayer.appendChild(neuron);
+            }
+            
+            // 隐藏层
+            for (let i = 0; i < hiddenNeurons; i++) {
+                const neuron = document.createElement('div');
+                neuron.className = 'neuron';
+                neuron.textContent = `h${i+1}`;
+                hiddenLayer.appendChild(neuron);
+            }
+            
+            // 输出层
+            for (let i = 0; i < outputNeurons; i++) {
+                const neuron = document.createElement('div');
+                neuron.className = 'neuron';
+                neuron.textContent = `ŷ${i+1}`;
+                outputLayer.appendChild(neuron);
+            }
+            
+            container.appendChild(inputLayer);
+            container.appendChild(hiddenLayer);
+            container.appendChild(outputLayer);
+            
+            // 添加连接线
+            setTimeout(() => {
+                const inputNeurons = inputLayer.querySelectorAll('.neuron');
+                const hiddenNeurons = hiddenLayer.querySelectorAll('.neuron');
+                const outputNeurons = outputLayer.querySelectorAll('.neuron');
+                
+                // 输入层到隐藏层的连接
+                inputNeurons.forEach((inputNeuron, i) => {
+                    const inputRect = inputNeuron.getBoundingClientRect();
+                    const inputX = inputRect.left + inputRect.width/2;
+                    const inputY = inputRect.top + inputRect.height/2;
+                    
+                    hiddenNeurons.forEach((hiddenNeuron, j) => {
+                        const hiddenRect = hiddenNeuron.getBoundingClientRect();
+                        const hiddenX = hiddenRect.left + hiddenRect.width/2;
+                        const hiddenY = hiddenRect.top + hiddenRect.height/2;
+                        
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        
+                        // 计算连接线的位置和尺寸
+                        const length = Math.sqrt(Math.pow(hiddenX - inputX, 2) + Math.pow(hiddenY - inputY, 2));
+                        const angle = Math.atan2(hiddenY - inputY, hiddenX - inputX);
+                        
+                        connection.style.width = `${length}px`;
+                        connection.style.height = '1px';
+                        connection.style.left = `${inputX - container.getBoundingClientRect().left}px`;
+                        connection.style.top = `${inputY - container.getBoundingClientRect().top}px`;
+                        connection.style.transform = `rotate(${angle}rad)`;
+                        connection.style.transformOrigin = '0 0';
+                        
+                        // 固定高亮部分连接线
+                        if ((i === 1 && j === 2) || (i === 0 && j === 1) || (i === 2 && j === 3)) {
+                            connection.classList.add('highlight-connection');
+                        }
+                        
+                        container.appendChild(connection);
+                    });
+                });
+                
+                // 隐藏层到输出层的连接
+                hiddenNeurons.forEach((hiddenNeuron, i) => {
+                    const hiddenRect = hiddenNeuron.getBoundingClientRect();
+                    const hiddenX = hiddenRect.left + hiddenRect.width/2;
+                    const hiddenY = hiddenRect.top + hiddenRect.height/2;
+                    
+                    outputNeurons.forEach((outputNeuron, j) => {
+                        const outputRect = outputNeuron.getBoundingClientRect();
+                        const outputX = outputRect.left + outputRect.width/2;
+                        const outputY = outputRect.top + outputRect.height/2;
+                        
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        
+                        // 计算连接线的位置和尺寸
+                        const length = Math.sqrt(Math.pow(outputX - hiddenX, 2) + Math.pow(outputY - hiddenY, 2));
+                        const angle = Math.atan2(outputY - hiddenY, outputX - hiddenX);
+                        
+                        connection.style.width = `${length}px`;
+                        connection.style.height = '1px';
+                        connection.style.left = `${hiddenX - container.getBoundingClientRect().left}px`;
+                        connection.style.top = `${hiddenY - container.getBoundingClientRect().top}px`;
+                        connection.style.transform = `rotate(${angle}rad)`;
+                        connection.style.transformOrigin = '0 0';
+                        
+                        // 固定高亮部分连接线
+                        if ((i === 1 && j === 0) || (i === 3 && j === 1)) {
+                            connection.classList.add('highlight-connection');
+                        }
+                        
+                        container.appendChild(connection);
+                    });
+                });
+            }, 100);
+        }
+        
+        // 绘制矩阵可视化（线性变换）
+        function drawMatrixVisualization() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制矩阵
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            
+            // 矩阵边框
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(30, 30, 120, 70);
+            
+            // 矩阵内容
+            ctx.fillText('w₁₁ w₁₂ w₁₃', 50, 50);
+            ctx.fillText('w₂₁ w₂₂ w₂₃', 50, 70);
+            ctx.fillText('w₃₁ w₃₂ w₃₃', 50, 90);
+            
+            // 矩阵标签
+            ctx.fillText('权重矩阵 W', 60, 120);
+            
+            // 绘制箭头
+            ctx.beginPath();
+            ctx.moveTo(10, 65);
+            ctx.lineTo(25, 65);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            // 输入向量
+            ctx.fillText('a₁', 5, 40);
+            ctx.fillText('a₂', 5, 65);
+            ctx.fillText('a₃', 5, 90);
+        }
+        
+        // 绘制函数可视化（非线性变换）
+        function drawFunctionVisualization() {
+            const canvas = document.getElementById('functionCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(30, 20);
+            ctx.lineTo(30, 110);
+            ctx.lineTo(170, 110);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            // 绘制ReLU函数
+            ctx.beginPath();
+            ctx.moveTo(30, 110);
+            ctx.lineTo(80, 110);
+            ctx.lineTo(130, 60);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 添加标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('ReLU(z)', 100, 30);
+            ctx.fillText('z', 165, 120);
+            ctx.fillText('σ(z)', 10, 15);
+            
+            // 绘制函数名称
+            ctx.fillText('激活函数 σ', 70, 130);
+        }
+        
+        // 2. 损失函数图形
+        function drawLossGraph(type = 'mse') {
+            const container = document.getElementById('lossGraph');
+            container.innerHTML = '';
+            
+            // 添加坐标轴
+            const graphLine = document.createElement('div');
+            graphLine.className = 'graph-line';
+            container.appendChild(graphLine);
+            
+            // 添加标签
+            const xLabel = document.createElement('div');
+            xLabel.className = 'graph-label';
+            xLabel.textContent = 'ŷ';
+            xLabel.style.bottom = '0';
+            xLabel.style.right = '10px';
+            container.appendChild(xLabel);
+            
+            const yLabel = document.createElement('div');
+            yLabel.className = 'graph-label';
+            yLabel.textContent = 'L(y, ŷ)';
+            yLabel.style.top = '10px';
+            yLabel.style.left = '10px';
+            container.appendChild(yLabel);
+            
+            // 绘制曲线
+            const width = container.offsetWidth;
+            const height = container.offsetHeight - 20; // 留出底部空间
+            
+            if (type === 'mse') {
+                // 均方误差 L = 0.5*(y-ŷ)^2，假设y=1
+                for (let x = 0; x < width; x += 5) {
+                    const ŷ = x / width * 2; // ŷ从0到2
+                    let loss;
+                    
+                    if (ŷ <= 2) {
+                        loss = 0.5 * Math.pow(1 - ŷ, 2);
+                        
+                        const point = document.createElement('div');
+                        point.className = 'graph-point';
+                        point.style.left = `${x}px`;
+                        point.style.bottom = `${loss * height * 2}px`; // 缩放以便更好显示
+                        container.appendChild(point);
+                    }
+                }
+            } else {
+                // 交叉熵 L = -[y*ln(ŷ) + (1-y)*ln(1-ŷ)]，假设y=1
+                for (let x = 10; x < width; x += 5) {
+                    const ŷ = x / width; // ŷ从0到1
+                    let loss;
+                    
+                    if (ŷ > 0 && ŷ <= 1) {
+                        loss = -Math.log(ŷ);
+                        
+                        const point = document.createElement('div');
+                        point.className = 'graph-point';
+                        point.style.left = `${x}px`;
+                        point.style.bottom = `${Math.min(loss * height / 4, height)}px`; // 缩放以便更好显示
+                        container.appendChild(point);
+                    }
+                }
+            }
+        }
+        
+        // 3. 梯度可视化
+        function drawGradientVisualization() {
+            const canvas = document.getElementById('gradientCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 绘制一个简单的函数和梯度
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(20, 20);
+            ctx.lineTo(20, 110);
+            ctx.lineTo(180, 110);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            // 绘制箭头
+            ctx.beginPath();
+            ctx.moveTo(20, 20);
+            ctx.lineTo(15, 25);
+            ctx.lineTo(25, 25);
+            ctx.closePath();
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(180, 110);
+            ctx.lineTo(175, 105);
+            ctx.lineTo(175, 115);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制函数曲线 (简单的二次函数)
+            ctx.beginPath();
+            ctx.moveTo(20, 110 - 0 * 50);
+            
+            for (let x = 0; x <= 160; x += 5) {
+                const xVal = x / 20;
+                const yVal = Math.pow(xVal - 4, 2); // (x-4)^2
+                ctx.lineTo(20 + x, 110 - yVal * 5);
+            }
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制梯度（切线）
+            const pointX = 80; // 选择x=3的点
+            const xVal = (pointX - 20) / 20;
+            const yVal = Math.pow(xVal - 4, 2);
+            const derivative = 2 * (xVal - 4); // 导数为2(x-4)
+            
+            // 绘制切线
+            ctx.beginPath();
+            ctx.moveTo(pointX - 30, 110 - (yVal - derivative * 1.5) * 5);
+            ctx.lineTo(pointX + 30, 110 - (yVal + derivative * 1.5) * 5);
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 标记点
+            ctx.beginPath();
+            ctx.arc(pointX, 110 - yVal * 5, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fill();
+            
+            // 添加标签
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('损失函数', 100, 20);
+            ctx.fillText('梯度(导数)', pointX + 10, 110 - yVal * 5 - 10);
+        }
+        
+        // 4. 优化路径可视化
+        function drawOptimizationPath() {
+            const canvas = document.getElementById('optimizationCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(50, 30);
+            ctx.lineTo(50, height - 30);
+            ctx.lineTo(width - 30, height - 30);
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            
+            // 绘制箭头
+            ctx.beginPath();
+            ctx.moveTo(50, 30);
+            ctx.lineTo(45, 35);
+            ctx.lineTo(55, 35);
+            ctx.closePath();
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(width - 30, height - 30);
+            ctx.lineTo(width - 35, height - 35);
+            ctx.lineTo(width - 35, height - 25);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 添加标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('损失 L', 60, 40);
+            ctx.fillText('参数 W', width - 50, height - 15);
+            
+            // 绘制损失函数 (简单的二次函数)
+            ctx.beginPath();
+            const func = (x) => Math.pow(x - 5, 2) + 2; // (x-5)^2 + 2
+            
+            for (let x = 0; x <= width - 80; x++) {
+                const xVal = x / 30;
+                const yVal = func(xVal);
+                if (x === 0) {
+                    ctx.moveTo(50 + x, height - 30 - yVal * 10);
+                } else {
+                    ctx.lineTo(50 + x, height - 30 - yVal * 10);
+                }
+            }
+            
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制优化路径
+            const learningRate = parseFloat(document.getElementById('learningRate').value);
+            let currentX = 1; // 初始参数值
+            const pathPoints = [];
+            
+            for (let i = 0; i < 10; i++) {
+                const gradient = 2 * (currentX - 5); // 导数为2(x-5)
+                const nextX = currentX - learningRate * gradient;
+                
+                pathPoints.push({
+                    x: 50 + currentX * 30,
+                    y: height - 30 - func(currentX) * 10,
+                    nextX: nextX
+                });
+                
+                currentX = nextX;
+            }
+            
+            // 绘制点之间的连线
+            ctx.beginPath();
+            pathPoints.forEach((point, i) => {
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制点
+            pathPoints.forEach((point, i) => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = i === 0 ? '#2ecc71' : '#e74c3c';
+                ctx.fill();
+                
+                // 添加迭代标签
+                if (i < 3) {
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(`迭代${i+1}`, point.x + 5, point.y - 5);
+                }
+            });
+            
+            // 显示当前学习率
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText(`学习率 α = ${learningRate}`, width - 150, 30);
+        }
+        
+        // 5. 模拟训练过程
+        function simulateTraining() {
+            const progressBar = document.getElementById('progressBar');
+            const iterationCount = document.getElementById('iterationCount');
+            const currentLoss = document.getElementById('currentLoss');
+            const trainingProgress = document.getElementById('trainingProgress');
+            
+            trainingProgress.style.display = 'block';
+            progressBar.style.width = '0%';
+            iterationCount.textContent = '0';
+            
+            let loss = 1.0;
+            let iteration = 0;
+            const maxIterations = 20;
+            
+            const interval = setInterval(() => {
+                iteration++;
+                loss = loss * 0.85 + Math.random() * 0.05; // 模拟损失下降
+                
+                iterationCount.textContent = iteration;
+                currentLoss.textContent = loss.toFixed(4);
+                progressBar.style.width = `${(iteration / maxIterations) * 100}%`;
+                
+                if (iteration >= maxIterations) {
+                    clearInterval(interval);
+                    currentLoss.textContent = '0.0123';
+                }
+            }, 500);
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 绘制初始可视化
+            drawNeuralNetwork();
+            drawMatrixVisualization();
+            drawFunctionVisualization();
+            drawLossGraph('mse');
+            drawGradientVisualization();
+            drawOptimizationPath();
+            
+            // 绑定事件
+            document.getElementById('showMSE').addEventListener('click', () => {
+                drawLossGraph('mse');
+            });
+            
+            document.getElementById('showCrossEntropy').addEventListener('click', () => {
+                drawLossGraph('crossentropy');
+            });
+            
+            document.getElementById('learningRate').addEventListener('input', (e) => {
+                document.getElementById('lrValue').textContent = e.target.value;
+                drawOptimizationPath();
+            });
+            
+            document.getElementById('trainNetwork').addEventListener('click', simulateTraining);
+            
+            // 高亮步骤
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                step.addEventListener('mouseenter', () => {
+                    steps.forEach(s => s.style.opacity = '0.7');
+                    step.style.opacity = '1';
+                });
+                
+                step.addEventListener('mouseleave', () => {
+                    steps.forEach(s => s.style.opacity = '1');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,16 +1,16 @@
 # From zero to ...
 
-## 背景故事
-手搓大模型：我正在跟手搓大模型的 kol/koc 学习。传言的版本是我已经能够手搓大模型。我现在还不能手搓大模型，只能说刚刚入门。
-
 ## 一、学习阶段
 ### 1、纯学习
 #### 不自量力
 2 月 26 日，装了 VS Code，梦林帮我下载了 [open-r1](https://github.com/huggingface/open-r1)，梦林太看起我了，我啥都看不懂，无从下手。
-![图片文字识别工具.png](./images/media/image23.png)
+![image23.png](./images/media/image23.png)
 
 #### 学习教程
-还是从头开始学习吧，没有捷径。我看过一些论文，但是觉得理解起来很费劲，我想我还是从简单的入手吧。我上 bilibili 上 找了好多视频学习，很多都太散，不系统。有的是讲论文的，我的基础打的不扎实，我听的似懂非懂的，我只是知道了个概念和大概原理，可能能出去忽悠，对我个人的真知帮助没那么大。有的是灌水课的，没有知识量，只有盗取过来的宣传信息，看了基本等于白看。这个张老师的课，我个人觉得深入潜出，靠谱，不仅仅给你讲背后的道理，还手把手教你怎么手搓大模型，真正的理论和实践结合，知行合一才是真知。值得推荐给大家（我在不同的渠道费了好大劲找到了视频、博客和代码之间的关系，有的博客是我在代码里看到的地址）。
+还是从头开始学习吧，没有捷径。我看过一些论文，但是觉得理解起来很费劲，我想我还是从简单的入手吧。我上 bilibili 上 找了好多视频学习，很多都太散，不系统。有的是讲论文的，我的基础打的不扎实，我听的似懂非懂的，我只是知道了个概念和大概原理，可能能出去忽悠，对我个人的真知帮助没那么大。有的是灌水课的，没有知识量，只有盗取过来的宣传信息，看了基本等于白看。
+
+##### - 张老师
+这个张老师的课，我个人觉得深入潜出，靠谱，不仅仅给你讲背后的道理，还手把手教你怎么手搓大模型，真正的理论和实践结合，知行合一才是真知。值得推荐给大家（我在不同的渠道费了好大劲找到了视频、博客和代码之间的关系，有的博客是我在代码里看到的地址）。
 * 视频
     * [LLM张老师](https://www.bilibili.com/video/BV1JBPkeQEj9/?spm_id_from=333.999.0.0&vd_source=2c0f76983c4f568a4018e92a42a85e94)
 * 博客
@@ -19,8 +19,32 @@
 * 代码
     * [Transformer-from-scratch](https://github.com/waylandzhang/Transformer-from-scratch)
 
+##### - 赋范空间
+* 文档
+    * [大模型技术社区](https://kq4b3vgg5b.feishu.cn/wiki/JuJSwfbwmiwvbqkiQ7LcN1N1nhd)
+
+
+
 ### 2、学习使用工具
-#### 1）IDE
+#### 1）Dify
+* 搭建知识库
+![image26.png](./images/media/image26.png)
+* 配置工作流
+![image27.png](./images/media/image27.png)
+
+    备注：咱们公司内部也有自己的 agent 配置平台 https://llm-ops.mlamp.cn/apps
+    ，你也可以使用这个平台搭建自己的知识库，构建自己的工作流
+
+#### 2）BI 工具
+##### - dataease
+![image29.png](./images/media/image29.png)
+https://dataease.cn/
+
+##### - Panda AI
+![image28.png](./images/media/image28.png)
+https://app.pandabi.ai
+
+#### 3）IDE
 * IntelliJ IDEA
 * VS Code + github copilot
 * Trae-CN
@@ -30,7 +54,7 @@
 备注：
 我学习了 MGX 和 Devin，确认不是自己想要的，或者说不适合工程师。
 
-#### 2）Github
+#### 4）Github
 ##### - Git 命令
 ```bash
 git clone https://huggingface.co/bytedance-research/UI-TARS-7B-DPO
@@ -55,7 +79,7 @@ git push origin main
 * [Scratch-kobe](https://jiangpingt.github.io/Scratch/kobe/)
 * [Scratch-llm-learning-step-by-step](https://github.com/jiangpingT/Scratch/blob/main/LLM-learning/step-by-stepT/step-by-stepT.md)
 
-#### 3）API Key
+#### 5）API Key
 任何大模型的调用都要使用 API Key，搞明白 API Key 第一个重要课程。我曾经尝试自己去 OpenAI 上生成自己的 API Key 无功而返，太麻烦，容易被封。其实，谁能够简单直接的提供 API Key，也是一个生意。对于太多人，搞不定这个 API Key，也就没法起步。好在我们公司有自己的网关，帮大家解决了这个烦人的门槛问题。
 
 ##### - 我们自己的网关
@@ -83,7 +107,13 @@ api_key = "sk-xx"
 
 ##### - 也可以选用[openrouter](https://openrouter.ai/)提供的免费的模型 api key，这里有gemini、Deepseek API key。
 
-#### 4）VPN
+##### - Google AI Studio
+可以免费获得Google 大模型的 API Key
+![image30.png](./images/media/image30.png)
+https://aistudio.google.com/apikey
+
+
+#### 6）VPN
 * 一定不要凑活
 
     * 一个 好的 VPN 能够加速至少 1倍工作效率。尤其是要设置好规则模式，就是该连外网的时候自动使用代理，不该连的时候，用本地网络。因为，大模型要依赖很多包，有时候下载包的速度就能搞死人，还有agent 的很多测试网站都是外网，如果代理不通，agent 就拿不到结果。
@@ -375,7 +405,7 @@ Go to google.com and search for "hello world"
 
 [外网访问链接：jiangpingT's step-by-stepT](https://jiangpingt.github.io/Scratch/LLM-learning/step-by-stepT/step-by-stepT.md)
 
-2）assemble-into-a-class
+#### 2）assemble-into-a-class
 
 还没有开始……
 
@@ -441,6 +471,7 @@ owl “gaia测试结果统计程序run_analysis.py”，去调用”gaia测试�
 
 ### 1、大模型架构的理解
 
+#### 1）自然语言的理解
 大模型的解码过程通常可以概括为以下三个最大的阶段：
 
 * 阶段一：输入准备阶段
@@ -457,17 +488,50 @@ owl “gaia测试结果统计程序run_analysis.py”，去调用”gaia测试�
 * 环节2：前馈神经网络Feed Forward
 ![0_PCXLUzFKsslf6oNQ.jpeg](./images/media/image1.jpeg)
 
-备注：
+    备注：
 
-输入准备阶段：在此阶段，首先要对输入数据进行编码。对于文本数据，会将单词或字符转换为词向量，同时添加位置编码，以捕捉文本中的顺序信息。这样可以将原始输入转化为模型能够理解和处理的向量表示，为后续的解码操作提供基础。
+    输入准备阶段：在此阶段，首先要对输入数据进行编码。对于文本数据，会将单词或字符转换为词向量，同时添加位置编码，以捕捉文本中的顺序信息。这样可以将原始输入转化为模型能够理解和处理的向量表示，为后续的解码操作提供基础。
 
-特征提取与融合阶段：这是解码过程的核心部分，主要利用 Transformer
-中的各种机制来提取和融合特征。其中包括多头注意力机制，它能够并行地从不同角度捕捉输入序列中的语义关系和依赖信息；同时还有前馈神经网络，用于对注意力机制输出的特征进行进一步的变换和非线性处理，以增强模型的表达能力。此外，残差连接和层归一化等技术也在此阶段发挥作用，有助于优化模型的训练和提高性能。
+    特征提取与融合阶段：这是解码过程的核心部分，主要利用 Transformer中的各种机制来提取和融合特征。其中包括多头注意力机制，它能够并行地从不同角度捕捉输入序列中的语义关系和依赖信息；同时还有前馈神经网络，用于对注意力机制输出的特征进行进一步的变换和非线性处理，以增强模型的表达能力。此外，残差连接和层归一化等技术也在此阶段发挥作用，有助于优化模型的训练和提高性能。
 
-输出生成阶段：经过前面的特征提取与融合后，模型会根据学到的知识和模式生成输出。在生成文本的任务中，模型会根据当前的状态和上下文信息，预测下一个单词或字符的概率分布，然后通过采样或选择策略来确定实际输出的内容。这个过程可能会持续多个步骤，直到达到预设的结束条件，如生成特定数量的
-tokens 或遇到结束标记。
+    输出生成阶段：经过前面的特征提取与融合后，模型会根据学到的知识和模式生成输出。在生成文本的任务中，模型会根据当前的状态和上下文信息，预测下一个单词或字符的概率分布，然后通过采样或选择策略来确定实际输出的内容。这个过程可能会持续多个步骤，直到达到预设的结束条件，如生成特定数量的tokens 或遇到结束标记。
+
+#### 2）函数语言的理解
+
+* 前向传播：
+
+    计算输出 ŷ = f(x; W, b)
+
+    计算损失 L(y, ŷ)
+
+    保存每一层的 z 和 a（用于后续梯度计算）。
+
+* 反向传播：
+
+    从输出层开始，利用链式法则计算：
+
+    损失对输出的梯度（∂L/∂ŷ）
+
+    损失对权重和偏置的梯度（∂L/∂W, ∂L/∂b）
+
+    需要用到前向传播保存的 z 和 a。
+
+* 参数更新：
+
+    用梯度下降更新参数：W = W - α·(∂L/∂W) 和 b = b - α·(∂L/∂b)。
+
+[外网访问链接：大模型架构简介](https://jiangpingt.github.io/Scratch/LLM-learning/html/llm.html)
+
 
 ### 2、大模型和大模型工具的理解
+
+* 稍微复杂点的问答或者查询、搜索，尽量返回 html 格式，一方面容易阅读另一方面也能利用 html 和 js 的能力，回答相对复杂点的问题
+    * Excample：帮我制作一个赛博朋克贪吃蛇游戏，在单个HTML中运行
+    
+    * Excample：模拟一个太阳系行星运动，在单个HTML中运行
+
+    * Excample：创建一个包含 CSS 和 JavaScript 的HTML 文件，生成一个前馈神经网络的动画或者动态介绍页面。该页面包括如下信息：简单明了的方式介绍下，大模型训练和推理用到的数学公式，并对核心环节前馈神经网络展开介绍（要包括损失函数和梯度）并将数学公式用图形化的方式直观展现出来。可以简化整个流程3到 6 步。在单个HTML中运行
+
 
 * Claud 3.5和3.7使用体验最好，编程的性能也是最好的
 
