@@ -1,0 +1,5 @@
+anthropic
+requests
+beautifulsoup4
+gTTS
+google-search-results

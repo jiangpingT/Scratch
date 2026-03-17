@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# 数据文件
+database/*.db
+database/*.db-journal
+output/
+logs/
+*.log
+
+# 临时文件
+temp/
+tmp/
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 测试文件
+test_*.py
+TEST_*.md
+
+# 环境变量（会通过 docker-compose 传入）
+.env
+.env.local

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  podcast:
+    build: .
+    container_name: ai-podcast-agent
+    env_file:
+      - .env
+    volumes:
+      # 持久化数据
+      - ./database:/app/database
+      - ./output:/app/output
+      - ./logs:/app/logs
+      # 挂载配置（可选，方便调试）
+      - ./config.py:/app/config.py
+    restart: unless-stopped
+
+    # 时区设置
+    environment:
+      - TZ=Asia/Shanghai
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# 可选：添加网络
+networks:
+  default:
+    name: podcast-network
